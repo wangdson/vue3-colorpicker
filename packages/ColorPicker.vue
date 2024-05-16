@@ -59,7 +59,7 @@
     ref,
     useSlots,
   } from "vue";
-  import { onClickOutside, tryOnMounted, whenever, useDebounceFn } from "@vueuse/core";
+  import { onClickOutside, tryOnMounted, whenever, useDebounceFn, tryOnUnmounted } from "@vueuse/core";
   import tinycolor, { ColorInputWithoutInstance } from "tinycolor2";
   import { ColorStop, GradientNode, parse, stringify } from "gradient-parser";
   import { createPopper, Instance } from "@popperjs/core";
@@ -398,6 +398,14 @@
           initProper();
         }
       });
+
+      tryOnUnmounted(() => {
+        // 释放instance资源
+        if (popperInstance) {
+          popperInstance?.destory();
+          popperInstance = null;
+        }
+      })
 
       whenever(
         () => props.gradientColor,
